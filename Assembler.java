@@ -7,18 +7,10 @@ import java.util.*;
 public class Assembler {
 
 
-    public static void main(String[] args) {
-        int x = 0x283FF;
+    private static String dataToWrite = "";
 
-        System.err.println(Integer.toBinaryString(x));
 
-        
-
-                        
-
-    }
-
-    public static void main2 (String[] args){
+    public static void main(String[] args){
         
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter the file name: ");
@@ -35,6 +27,8 @@ public class Assembler {
                 String line = fileReader.nextLine();
                 parseLine(line);
             }
+
+            printToFile("output.hex", dataToWrite);
         }
         catch(Exception e){
             System.out.println("Error reading file");
@@ -46,7 +40,6 @@ public class Assembler {
 
 
     private static void parseLine(String line) {
-        line = line.replaceAll(",", "");
         line = line.replaceAll(",", "");
         String[] tokens = line.split(" ");
         switch(tokens[0]){
@@ -65,12 +58,20 @@ public class Assembler {
             case "LD": //6
                 break;
             case "ST": //7
+                //ST SRC ADDR  
+                dataToWrite +=  instruction_ST(tokens[1], tokens[2])  + "\n";
                 break;
             case "CMP": //8
+                //CMP OP1 OP2
+                dataToWrite +=  instruction_CMP(tokens[1], tokens[2])  + "\n";
                 break;
             case "JUMP": //9
+                //JUMP ADDR  
+                dataToWrite +=  instruction_JUMP(tokens[1])  + "\n";
                 break;
             case "JE": //10
+                //JE ADDR 
+                dataToWrite +=  instruction_JE(tokens[1])  + "\n";
                 break;
             case "JA": //11
                 break;
@@ -88,13 +89,7 @@ public class Assembler {
 
     
 
-    //This function will convert the binary string to ASCII code
-    private String convertStringToASCII(String binaryString) {
-        //100000000000000000 => 
-
-        return "";
-    }
-
+    
     
     private static int instruction_JA(String addr){
         int instruction = 0b1011<<14;
@@ -107,39 +102,111 @@ public class Assembler {
     }
 
 
-    
-    
-    private static int instruction_ADD(String dst, String src1, String src2){
-        
-        
-        return 0;
+    private static String instruction_ADD(String dst, String src1, String src2){
+        String instruction = "0000";
+        instruction += convertRegisterStringToBinaryString(dst);
+        instruction += convertRegisterStringToBinaryString(src1);
+        instruction += "00";
+        instruction += convertRegisterStringToBinaryString(src2);
+        return instruction;
         
     }
 
-    private static void PrintToFile(String fileName, int binary){
-        try{
-            FileOutputStream fw = new FileOutputStream(fileName);
-            fw.write(binary);
-            
-        }catch(Exception e){
-            System.out.println("Error writing to file");
-            e.printStackTrace();
+    private static String instruction_AND(String dst, String src1, String src2){
+        String instruction = "0001";
+        instruction += convertRegisterStringToBinaryString(dst);
+        instruction += convertRegisterStringToBinaryString(src1);
+        instruction += "00";
+        instruction += convertRegisterStringToBinaryString(src2);
+        return instruction;
+        
+    }
+
+    private static String instruction_NAND(String dst, String src1, String src2){
+        String instruction = "0010";
+        instruction += convertRegisterStringToBinaryString(dst);
+        instruction += convertRegisterStringToBinaryString(src1);
+        instruction += "00";
+        instruction += convertRegisterStringToBinaryString(src2);
+        return instruction;
+        
+    }
+
+
+    // 7. ST SRC ADDR  
+    private static String instruction_ST(String src, String addr) {
+        String instructionBinaryString = "0111";
+        instructionBinaryString += convertRegisterStringToBinaryString(src);
+        instructionBinaryString += convertAdressStringToBinary(addr);
+
+        return instructionBinaryString;
+    }
+
+    // 8. CMP OP1 OP2  
+    private static String instruction_CMP(String op1, String op2) {
+        String instructionBinaryString = "1000";
+        instructionBinaryString += convertRegisterStringToBinaryString(op1);
+        instructionBinaryString += "000000";
+        instructionBinaryString += convertRegisterStringToBinaryString(op2);
+
+        return instructionBinaryString;
+    }
+
+    // 9. JUMP ADDR
+    private static String instruction_JUMP(String addr) {
+        String instructionBinaryString = "1001";
+        instructionBinaryString += "0000";
+        instructionBinaryString += convertAdressStringToBinary(addr);
+
+        return instructionBinaryString;
+    }
+
+    // 10. JE ADDR
+    private static String instruction_JE(String addr) {
+        String instructionBinaryString = "1010";
+        instructionBinaryString += "0000";
+        instructionBinaryString += convertAdressStringToBinary(addr);
+
+        return instructionBinaryString;
+    }
+
+
+    
+
+    private static String convertRegisterStringToBinaryString(String registerString) {
+
+        if(registerString.charAt(0) != 'R'){
+            System.out.println("Invalid register: " + registerString);
+            System.exit(0);
         }
-    }
 
-    /*
-    private byte[] stringToBinary(String input) {
-        
-        byte[] result = new byte[input.length()];
+        registerString = registerString.substring(1, registerString.length());
 
-        for (int i = 0; i < input.length(); i++) {
-            result[i] = (byte) input.charAt(i);
+        try {
+            int register = Integer.parseInt(registerString);
+
+            if(register < 0 || register > 15){
+                System.out.println("Invalid register: " + registerString);
+                System.exit(0);
+            }
+
+            String binary = Integer.toBinaryString(register);
+            while(binary.length() < 4){
+                binary = "0" + binary;
+            }
+
+
+            return binary;
+
+
+        } catch (Exception e) { //If the string afte "R" is not a number, then it will throw an exception
+            System.out.println("Invalid register: " + registerString);
+            System.exit(0);
         }
 
-        return result;
+
+        return "";
     }
-    */
-    
     
 
 }
