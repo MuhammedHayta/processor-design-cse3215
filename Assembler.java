@@ -2,9 +2,6 @@
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.ByteBuffer;
 import java.util.*;
 
 public class Assembler {
@@ -23,9 +20,9 @@ public class Assembler {
 
         try {
 
-            File file = new File(fileName);
+            File file = new File(fileName + ".txt");
             Scanner fileReader = new Scanner(file);
-            fw = new FileWriter(fileName);
+            fw = new FileWriter(fileName + ".hex");
 
             while (fileReader.hasNextLine()) {
                 String line = fileReader.nextLine();
@@ -36,6 +33,7 @@ public class Assembler {
             for (String s : stringArray) {
                 printToFile(binaryStringToHexString(s));
             }
+            fw.close();
 
         } catch (Exception e) {
             System.out.println("Error reading file");
