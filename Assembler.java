@@ -96,58 +96,46 @@ public class Assembler {
         }
     }
 
-    private static String instruction_JA(String addr) {
+    private static int addresValidator(String addr) {
 
-        int instruction = 0b1011 << 14;
-        int intAddr = Integer.parseInt(addr);
+        try {
+            int intAddr = Integer.parseInt(addr);
 
-        if (intAddr < 0 || intAddr > 0x3FF) {
-            System.out.println("Invalid address");
-            return null;
+            if (intAddr < 0 || intAddr > 0x3FF) {
+                System.out.println("Invalid address: " + addr);
+                return -1;
+            }
+            return intAddr;
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
-        instruction += intAddr;
+        return -1;
+    }
+
+    private static String instruction_JA(String addr) {
+        int instruction = 0b1011 << 14;
+        instruction += addresValidator(addr);
         return Integer.toBinaryString(instruction);
 
     }
 
     private static String instruction_JB(String addr) {
-
         int instruction = 0b1100 << 14;
-        int intAddr = Integer.parseInt(addr);
-
-        if (intAddr < 0 || intAddr > 0x3FF) {
-            System.out.println("Invalid address");
-            return null;
-        }
-        instruction += intAddr;
+        instruction += addresValidator(addr);
         return Integer.toBinaryString(instruction);
 
     }
 
     private static String instruction_JAE(String addr) {
-
         int instruction = 0b1101 << 14;
-        int intAddr = Integer.parseInt(addr);
-
-        if (intAddr < 0 || intAddr > 0x3FF) {
-            System.out.println("Invalid address");
-            return null;
-        }
-        instruction += intAddr;
+        instruction += addresValidator(addr);
         return Integer.toBinaryString(instruction);
 
     }
 
     private static String instruction_JBE(String addr) {
-
         int instruction = 0b1110 << 14;
-        int intAddr = Integer.parseInt(addr);
-
-        if (intAddr < 0 || intAddr > 0x3FF) {
-            System.out.println("Invalid address");
-            return null;
-        }
-        instruction += intAddr;
+        instruction += addresValidator(addr);
         return Integer.toBinaryString(instruction);
 
     }
@@ -223,7 +211,7 @@ public class Assembler {
         int intAddr = Integer.parseInt(addr, 16);
 
         if (intAddr < 0 || intAddr > 0x3FF) {
-            System.out.println("Invalid address "+addr);
+            System.out.println("Invalid address " + addr);
             return null;
         }
 
@@ -239,13 +227,13 @@ public class Assembler {
         binaryString = "00" + binaryString;
         String tempString = "";
         String hexStr = "";
-        for(int i = binaryString.length()-1 ; i>=0 ; i-= 4){
+        for (int i = binaryString.length() - 1; i >= 0; i -= 4) {
             tempString = "";
-            tempString += binaryString.charAt(i-3)+""+binaryString.charAt(i-2)+""+binaryString.charAt(i-1)+""+binaryString.charAt(i)+"";
+            tempString += binaryString.charAt(i - 3) + "" + binaryString.charAt(i - 2) + "" + binaryString.charAt(i - 1)
+                    + "" + binaryString.charAt(i) + "";
             hexStr = fourBitToHex(tempString) + hexStr;
         }
-        
-        
+
         return hexStr;
     }
 
