@@ -158,6 +158,7 @@ public class Assembler {
         instruction += convertRegisterStringToBinaryString(src1);
         instruction += "00";
         instruction += convertRegisterStringToBinaryString(src2);
+        System.out.println(instruction);
         return instruction;
 
     }
@@ -222,7 +223,7 @@ public class Assembler {
         int intAddr = Integer.parseInt(addr, 16);
 
         if (intAddr < 0 || intAddr > 0x3FF) {
-            System.out.println("Invalid address");
+            System.out.println("Invalid address "+addr);
             return null;
         }
 
@@ -235,10 +236,59 @@ public class Assembler {
     }
 
     private static String binaryStringToHexString(String binaryString) {
-        int decimal = Integer.parseInt(binaryString, 2);
-        String hexStr = Integer.toHexString(decimal);
-        hexStr = hexStr.toUpperCase();
+        binaryString = "00" + binaryString;
+        String tempString = "";
+        String hexStr = "";
+        for(int i = binaryString.length()-1 ; i>=0 ; i-= 4){
+            tempString = "";
+            tempString += binaryString.charAt(i-3)+""+binaryString.charAt(i-2)+""+binaryString.charAt(i-1)+""+binaryString.charAt(i)+"";
+            hexStr = fourBitToHex(tempString) + hexStr;
+        }
+        
+        
         return hexStr;
+    }
+
+    private static String fourBitToHex(String fourBit) {
+        switch (fourBit) {
+            case "0000":
+                return "0";
+            case "0001":
+                return "1";
+            case "0010":
+                return "2";
+            case "0011":
+                return "3";
+            case "0100":
+                return "4";
+            case "0101":
+                return "5";
+            case "0110":
+                return "6";
+            case "0111":
+                return "7";
+            case "1000":
+                return "8";
+            case "1001":
+                return "9";
+            case "1010":
+                return "A";
+            case "1011":
+                return "B";
+            case "1100":
+                return "C";
+            case "1101":
+                return "D";
+            case "1110":
+                return "E";
+            case "1111":
+                return "F";
+            default:
+                System.out.println("Invalid binary string");
+                System.exit(0);
+                break;
+        }
+        return "";
     }
 
     private static void printToFile(String binaryString) {
