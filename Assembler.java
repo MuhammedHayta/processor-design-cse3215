@@ -25,6 +25,7 @@ public class Assembler {
 
             File file = new File(fileName);
             Scanner fileReader = new Scanner(file);
+            fw = new FileWriter(fileName);
 
             while (fileReader.hasNextLine()) {
                 String line = fileReader.nextLine();
