@@ -21,8 +21,8 @@ public class Assembler {
             File file = new File("test.hex");
             String hexString = binaryStringToHexString(binaryString);
             fw = new FileWriter(file);
-            printToFile(file.getName(), hexString );
-            printToFile(file.getName(), hexString );
+            printToFile( hexString );
+            printToFile( hexString );
             fw.close();
         } catch (Exception e) {
             // TODO: handle exception
@@ -225,7 +225,7 @@ public class Assembler {
 
     }
 
-    private static void printToFile(String fileName, String binaryString) {
+    private static void printToFile(String binaryString) {
         try {
             
             fw.write(binaryString);
