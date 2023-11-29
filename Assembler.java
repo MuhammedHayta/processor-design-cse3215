@@ -11,6 +11,9 @@ public class Assembler {
     public static FileOutputStream out;
 
     public static void main(String[] args) {
+        // 11 0001 0011 0111 1111
+        System.out.println(binaryStringToHexString("110001001101111111"));
+        /*
         int x[] = { 0x283FF, 0x3FFFF, 0x22222 };
         try {
             out = new FileOutputStream("test.hex");
@@ -26,7 +29,7 @@ public class Assembler {
                 e.printStackTrace();
             }
         }
-
+        */
     }
 
     public static byte[] IntToByteArray(int data) {
@@ -163,16 +166,48 @@ public class Assembler {
         return Integer.toBinaryString(instruction);
 
     }
+    /*
+        private static String instruction_ADD(String dst, String src1, String src2){
+        String instruction = "0000";
+        instruction += convertRegisterStringToBinaryString(dst);
+        instruction += convertRegisterStringToBinaryString(src1);
+        instruction += "00";
+        instruction += convertRegisterStringToBinaryString(src2);
+        return instruction;
+        
+    }
 
-    private static int instruction_ADD(String dst, String src1, String src2) {
+    private static String instruction_AND(String dst, String src1, String src2){
+        String instruction = "0001";
+        instruction += convertRegisterStringToBinaryString(dst);
+        instruction += convertRegisterStringToBinaryString(src1);
+        instruction += "00";
+        instruction += convertRegisterStringToBinaryString(src2);
+        return instruction;
+        
+    }
 
-        return 0;
-
+    private static String instruction_NAND(String dst, String src1, String src2){
+        String instruction = "0010";
+        instruction += convertRegisterStringToBinaryString(dst);
+        instruction += convertRegisterStringToBinaryString(src1);
+        instruction += "00";
+        instruction += convertRegisterStringToBinaryString(src2);
+        return instruction;
+        
+    }
+     */
+    private static String binaryStringToHexString(String binaryString) {
+        int decimal = Integer.parseInt(binaryString, 2);
+        String hexStr = Integer.toHexString(decimal);
+        hexStr = hexStr.toUpperCase();
+        //String hexStr = Integer.toString(decimal, 16);
+        return hexStr;
     }
 
     private static void writeFile(int instruction) {
         byte b[] = IntToByteArray(instruction);
-        out.write(b);
+        //out.write(b);
 
     }
 
