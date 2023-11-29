@@ -25,14 +25,14 @@ public class Assembler {
 
             File file = new File(fileName);
             Scanner fileReader = new Scanner(file);
-        
+            fw = new FileWriter(fileName);
         
             while(fileReader.hasNextLine()){
                 String line = fileReader.nextLine();
                 parseLine(line);
             }
 
-            printToFile("output.hex", dataToWrite);
+            printToFile(dataToWrite);
         }
         catch(Exception e){
             System.out.println("Error reading file");
@@ -175,8 +175,7 @@ public class Assembler {
         instruction += "00";
         instruction += convertRegisterStringToBinaryString(src2);
         return instruction;
-        
-    }
+    }
      
 
 
