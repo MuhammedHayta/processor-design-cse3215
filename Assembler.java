@@ -99,7 +99,7 @@ public class Assembler {
     private static int addresValidator(String addr) {
 
         try {
-            int intAddr = Integer.parseInt(addr);
+            int intAddr = Integer.parseInt(addr, 16);
 
             if (intAddr < 0 || intAddr > 0x3FF) {
                 System.out.println("Invalid address: " + addr);
@@ -146,7 +146,6 @@ public class Assembler {
         instruction += convertRegisterStringToBinaryString(src1);
         instruction += "00";
         instruction += convertRegisterStringToBinaryString(src2);
-        System.out.println(instruction);
         return instruction;
 
     }
