@@ -12,70 +12,35 @@ public class Assembler {
     public static FileOutputStream out;
 
     private static FileWriter fw;
+    private static String dataToWrite = "";
 
     public static void main(String[] args) {
-        // 11 0001 0011 0111 1111
-        String binaryString = "110001001101111111";
-        System.out.println(binaryStringToHexString(binaryString));
-        try {
-            File file = new File("test.hex");
-            String hexString = binaryStringToHexString(binaryString);
-            fw = new FileWriter(file);
-            printToFile( hexString );
-            printToFile( hexString );
-            fw.close();
-        } catch (Exception e) {
-            // TODO: handle exception
-        }
-        /*
-        int x[] = { 0x283FF, 0x3FFFF, 0x22222 };
-        try {
-            out = new FileOutputStream("test.hex");
-
-            // Kodun devamı buradan.
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        */
-    }
-
-    public static byte[] IntToByteArray(int data) {
-        byte[] result = new byte[3];
-        result[0] = (byte) ((data & 0xF0000) >> 16);
-        result[1] = (byte) ((data & 0x0FF00) >> 8);
-        result[2] = (byte) ((data & 0x000FF) >> 0);
-        return result;
-    }
-
-    public static void main2(String[] args) {
-
+        
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter the file name: ");
 
         String fileName = sc.nextLine();
-
+        
         try {
 
             File file = new File(fileName);
             Scanner fileReader = new Scanner(file);
-
-            while (fileReader.hasNextLine()) {
+        
+        
+            while(fileReader.hasNextLine()){
                 String line = fileReader.nextLine();
                 parseLine(line);
             }
-        } catch (Exception e) {
+
+            printToFile("output.hex", dataToWrite);
+        }
+        catch(Exception e){
             System.out.println("Error reading file");
             e.printStackTrace();
         }
-
     }
+
+
 
     private static void parseLine(String line) {
         line = line.replaceAll(",", "");
@@ -182,8 +147,8 @@ public class Assembler {
         return Integer.toBinaryString(instruction);
 
     }
-    /*
-        private static String instruction_ADD(String dst, String src1, String src2){
+    
+    private static String instruction_ADD(String dst, String src1, String src2){
         String instruction = "0000";
         instruction += convertRegisterStringToBinaryString(dst);
         instruction += convertRegisterStringToBinaryString(src1);
@@ -212,7 +177,7 @@ public class Assembler {
         return instruction;
         
     }
-     */
+     
 
 
     // 7. ST SRC ADDR  
