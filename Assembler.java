@@ -1,6 +1,7 @@
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
@@ -10,9 +11,22 @@ public class Assembler {
 
     public static FileOutputStream out;
 
+    private static FileWriter fw;
+
     public static void main(String[] args) {
         // 11 0001 0011 0111 1111
-        System.out.println(binaryStringToHexString("110001001101111111"));
+        String binaryString = "110001001101111111";
+        System.out.println(binaryStringToHexString(binaryString));
+        try {
+            File file = new File("test.hex");
+            String hexString = binaryStringToHexString(binaryString);
+            fw = new FileWriter(file);
+            printToFile(file.getName(), hexString );
+            printToFile(file.getName(), hexString );
+            fw.close();
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
         /*
         int x[] = { 0x283FF, 0x3FFFF, 0x22222 };
         try {
@@ -211,10 +225,11 @@ public class Assembler {
 
     }
 
-    private static void PrintToFile(String fileName, int binary) {
+    private static void printToFile(String fileName, String binaryString) {
         try {
-            FileOutputStream fw = new FileOutputStream(fileName);
-            fw.write(binary);
+            
+            fw.write(binaryString);
+            fw.write("\n");
 
         } catch (Exception e) {
             System.out.println("Error writing to file");
