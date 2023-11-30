@@ -10,14 +10,16 @@ public class Assembler {
 
     private static FileWriter fw;
     private static String dataToWrite = "";
+    private static ArrayList<String> instructions = new ArrayList<String>();
 
     public static void main(String[] args) {
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter the file name: ");
-
-        String fileName = sc.nextLine();
-
+        //TODO: Uncomment this line to get input from user
+        //String fileName = sc.nextLine();
+        sc.close();
+        String fileName = "input";
         try {
 
             File file = new File(fileName + ".txt");
@@ -26,14 +28,18 @@ public class Assembler {
 
             while (fileReader.hasNextLine()) {
                 String line = fileReader.nextLine();
+                instructions.add(line);
                 parseLine(line);
             }
+            fileReader.close();
 
             String stringArray[] = dataToWrite.split("\n");
             for (String s : stringArray) {
                 printToFile(binaryStringToHexString(s));
             }
             fw.close();
+
+            PrintTest(stringArray);
 
         } catch (Exception e) {
             System.out.println("Error reading file");
@@ -55,12 +61,16 @@ public class Assembler {
                 dataToWrite += instruction_NAND(tokens[1], tokens[2], tokens[3]) + "\n";
                 break;
             case "NOR": // 3
+                dataToWrite += instruction_NOR(tokens[1], tokens[2], tokens[3]) + "\n";
                 break;
             case "ADDI": // 4
+                dataToWrite += instruction_ADDI(tokens[1], tokens[2], tokens[3]) + "\n";
                 break;
             case "ANDI": // 5
+                dataToWrite += instruction_ANDI(tokens[1], tokens[2], tokens[3]) + "\n";
                 break;
             case "LD": // 6
+                dataToWrite += instruction_LD(tokens[1], tokens[2]) + "\n";
                 break;
             case "ST": // 7
                 // ST SRC ADDR
@@ -111,6 +121,7 @@ public class Assembler {
         }
         return -1;
     }
+
 
     private static String instruction_JA(String addr) {
         int instruction = 0b1011 << 14;
@@ -185,7 +196,7 @@ public class Assembler {
         String instruction = "0100";
         instruction += convertRegisterStringToBinaryString(dst);
         instruction += convertRegisterStringToBinaryString(src1);
-        instruction += convertAdressStringToBinary(imm);
+        instruction += convertImmediateToBinary(imm);
         return instruction;
 
     }
@@ -195,7 +206,7 @@ public class Assembler {
         String instruction = "0101";
         instruction += convertRegisterStringToBinaryString(dst);
         instruction += convertRegisterStringToBinaryString(src1);
-        instruction += convertAdressStringToBinary(imm);
+        instruction += convertImmediateToBinary(imm);
         return instruction;
 
     }
@@ -246,6 +257,9 @@ public class Assembler {
         return instructionBinaryString;
     }
 
+
+
+
     private static String convertAdressStringToBinary(String addr) {
         int intAddr = Integer.parseInt(addr, 16);
 
@@ -261,6 +275,28 @@ public class Assembler {
 
         return binaryString;
     }
+
+    private static String convertImmediateToBinary(String immediate) {
+        int intImmediate = Integer.parseInt(immediate);
+    
+        if (intImmediate < -32 || intImmediate > 31) {
+            System.out.println("Invalid immediate value: " + immediate);
+            System.exit(0);
+        }
+    
+        // Adjust the binary representation for negative values
+        if (intImmediate < 0) {
+            intImmediate = (1 << 6) + intImmediate;
+        }
+    
+        String binaryString = Integer.toBinaryString(intImmediate);
+        while (binaryString.length() < 6) {
+            binaryString = "0" + binaryString;
+        }
+    
+        return binaryString;
+    }
+    
 
     private static String binaryStringToHexString(String binaryString) {
         binaryString = "00" + binaryString;
@@ -361,5 +397,26 @@ public class Assembler {
 
         return "";
     }
+
+    //Test function to print binary string
+    private static void PrintTest(String[] StringArray) {
+        for (int i = 0; i < StringArray.length; i++) {
+            System.out.println("INSTRUCTION: " + instructions.get(i) + " BINARY: " + binaryWithSpace(StringArray[i]) + " HEX: "
+                    + binaryStringToHexString(StringArray[i]));
+        }
+    }
+
+    private static String binaryWithSpace(String binaryString) {
+        binaryString = "00" + binaryString;
+        String tempString = "";
+        for (int i = 0; i < binaryString.length(); i++) {
+            tempString += binaryString.charAt(i);
+            if (i % 4 == 3) {
+                tempString += " ";
+            }
+        }
+        return tempString;
+    }
+    
 
 }
