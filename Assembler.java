@@ -16,10 +16,10 @@ public class Assembler {
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Enter the file name: ");
-        //TODO: Uncomment this line to get input from user
-        //String fileName = sc.nextLine();
-        sc.close();
         String fileName = "input";
+        // TODO: Uncomment this line to get input from user
+        fileName = sc.nextLine();
+        sc.close();
         try {
 
             File file = new File(fileName + ".txt");
@@ -32,7 +32,7 @@ public class Assembler {
                 parseLine(line);
             }
             fileReader.close();
-
+            fw.write("v2.0 raw\n");
             String stringArray[] = dataToWrite.split("\n");
             for (String s : stringArray) {
                 printToFile(binaryStringToHexString(s));
@@ -106,51 +106,6 @@ public class Assembler {
         }
     }
 
-    private static int addresValidator(String addr) {
-
-        try {
-            int intAddr = Integer.parseInt(addr, 16);
-
-            if (intAddr < 0 || intAddr > 0x3FF) {
-                System.out.println("Invalid address: " + addr);
-                return -1;
-            }
-            return intAddr;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        return -1;
-    }
-
-
-    private static String instruction_JA(String addr) {
-        int instruction = 0b1011 << 14;
-        instruction += addresValidator(addr);
-        return Integer.toBinaryString(instruction);
-
-    }
-
-    private static String instruction_JB(String addr) {
-        int instruction = 0b1100 << 14;
-        instruction += addresValidator(addr);
-        return Integer.toBinaryString(instruction);
-
-    }
-
-    private static String instruction_JAE(String addr) {
-        int instruction = 0b1101 << 14;
-        instruction += addresValidator(addr);
-        return Integer.toBinaryString(instruction);
-
-    }
-
-    private static String instruction_JBE(String addr) {
-        int instruction = 0b1110 << 14;
-        instruction += addresValidator(addr);
-        return Integer.toBinaryString(instruction);
-
-    }
-
     private static String instruction_ADD(String dst, String src1, String src2) {
         String instruction = "0000";
         instruction += convertRegisterStringToBinaryString(dst);
@@ -215,7 +170,7 @@ public class Assembler {
     private static String instruction_LD(String dst, String addr) {
         String instruction = "0110";
         instruction += convertRegisterStringToBinaryString(dst);
-        instruction += convertAdressStringToBinary(addr);
+        instruction += convertAddressStringToBinary(addr);
         return instruction;
 
     }
@@ -224,7 +179,7 @@ public class Assembler {
     private static String instruction_ST(String src, String addr) {
         String instructionBinaryString = "0111";
         instructionBinaryString += convertRegisterStringToBinaryString(src);
-        instructionBinaryString += convertAdressStringToBinary(addr);
+        instructionBinaryString += convertAddressStringToBinary(addr);
 
         return instructionBinaryString;
     }
@@ -243,7 +198,7 @@ public class Assembler {
     private static String instruction_JUMP(String addr) {
         String instructionBinaryString = "1001";
         instructionBinaryString += "0000";
-        instructionBinaryString += convertAdressStringToBinary(addr);
+        instructionBinaryString += convertAddressStringToBinary(addr);
 
         return instructionBinaryString;
     }
@@ -252,51 +207,71 @@ public class Assembler {
     private static String instruction_JE(String addr) {
         String instructionBinaryString = "1010";
         instructionBinaryString += "0000";
-        instructionBinaryString += convertAdressStringToBinary(addr);
+        instructionBinaryString += convertAddressStringToBinary(addr);
 
         return instructionBinaryString;
     }
 
+    private static String instruction_JA(String addr) {
+        String instruction = "10110000";
+        instruction += convertAddressStringToBinary(addr);
+        return instruction;
+    }
 
+    private static String instruction_JB(String addr) {
+        String instruction = "11000000";
+        instruction += convertAddressStringToBinary(addr);
+        return instruction;
 
+    }
 
-    private static String convertAdressStringToBinary(String addr) {
-        int intAddr = Integer.parseInt(addr, 16);
+    private static String instruction_JAE(String addr) {
+        String instruction = "11010000";
+        instruction += convertAddressStringToBinary(addr);
+        return instruction;
 
-        if (intAddr < 0 || intAddr > 0x3FF) {
+    }
+
+    private static String instruction_JBE(String addr) {
+        String instruction = "11100000";
+        instruction += convertAddressStringToBinary(addr);
+        return instruction;
+
+    }
+
+    private static String convertAddressStringToBinary(String addr) {
+        int intAddr = Integer.parseInt(addr);
+
+        if (intAddr < -512 || intAddr > 511) {
             System.out.println("Invalid address " + addr);
             return null;
         }
 
         String binaryString = Integer.toBinaryString(intAddr);
-        while (binaryString.length() < 10) {
-            binaryString = "0" + binaryString;
+        if (intAddr >= 0) {
+            while (binaryString.length() < 10) {
+                binaryString = "0" + binaryString;
+            }
         }
-
-        return binaryString;
+        return binaryString.substring(binaryString.length() - 10, binaryString.length());
     }
 
     private static String convertImmediateToBinary(String immediate) {
         int intImmediate = Integer.parseInt(immediate);
-    
+
         if (intImmediate < -32 || intImmediate > 31) {
             System.out.println("Invalid immediate value: " + immediate);
             System.exit(0);
         }
-    
-        // Adjust the binary representation for negative values
-        if (intImmediate < 0) {
-            intImmediate = (1 << 6) + intImmediate;
-        }
-    
+
         String binaryString = Integer.toBinaryString(intImmediate);
-        while (binaryString.length() < 6) {
-            binaryString = "0" + binaryString;
+        if (intImmediate >= 0) {
+            while (binaryString.length() < 6) {
+                binaryString = "0" + binaryString;
+            }
         }
-    
-        return binaryString;
+        return binaryString.substring(binaryString.length() - 6, binaryString.length());
     }
-    
 
     private static String binaryStringToHexString(String binaryString) {
         binaryString = "00" + binaryString;
@@ -398,11 +373,12 @@ public class Assembler {
         return "";
     }
 
-    //Test function to print binary string
+    // Test function to print binary string
     private static void PrintTest(String[] StringArray) {
         for (int i = 0; i < StringArray.length; i++) {
-            System.out.println("INSTRUCTION: " + instructions.get(i) + " BINARY: " + binaryWithSpace(StringArray[i]) + " HEX: "
-                    + binaryStringToHexString(StringArray[i]));
+            System.out.println(
+                    "INSTRUCTION: " + instructions.get(i) + " BINARY: " + binaryWithSpace(StringArray[i]) + " HEX: "
+                            + binaryStringToHexString(StringArray[i]));
         }
     }
 
@@ -417,6 +393,5 @@ public class Assembler {
         }
         return tempString;
     }
-    
 
 }
