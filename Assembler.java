@@ -169,6 +169,46 @@ public class Assembler {
         return instruction;
     }
 
+    // 3. NOR DST SRC1 SRC2
+    private static String instruction_NOR(String dst, String src1, String src2) {
+        String instruction = "0011";
+        instruction += convertRegisterStringToBinaryString(dst);
+        instruction += convertRegisterStringToBinaryString(src1);
+        instruction += "00";
+        instruction += convertRegisterStringToBinaryString(src2);
+        return instruction;
+
+    }
+
+    // 4. ADDI DST SRC1 IMM
+    private static String instruction_ADDI(String dst, String src1, String imm) {
+        String instruction = "0100";
+        instruction += convertRegisterStringToBinaryString(dst);
+        instruction += convertRegisterStringToBinaryString(src1);
+        instruction += convertAdressStringToBinary(imm);
+        return instruction;
+
+    }
+
+    // 5. ANDI DST SRC1 IMM
+    private static String instruction_ANDI(String dst, String src1, String imm) {
+        String instruction = "0101";
+        instruction += convertRegisterStringToBinaryString(dst);
+        instruction += convertRegisterStringToBinaryString(src1);
+        instruction += convertAdressStringToBinary(imm);
+        return instruction;
+
+    }
+
+    // 6. LD DST ADDR
+    private static String instruction_LD(String dst, String addr) {
+        String instruction = "0110";
+        instruction += convertRegisterStringToBinaryString(dst);
+        instruction += convertAdressStringToBinary(addr);
+        return instruction;
+
+    }
+
     // 7. ST SRC ADDR
     private static String instruction_ST(String src, String addr) {
         String instructionBinaryString = "0111";
