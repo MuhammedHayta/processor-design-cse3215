@@ -101,7 +101,7 @@ public class Assembler {
                 dataToWrite += instruction_JBE(tokens[1]) + "\n";
                 break;
             default:
-                System.out.println("Invalid instruction");
+                System.out.println("Invalid instruction" + tokens[0]);
                 break;
         }
     }
