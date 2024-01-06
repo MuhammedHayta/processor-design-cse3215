@@ -46,8 +46,8 @@ module ALU(
 	input [17:0] a,
 	input [17:0] b,
 	input [3:0] select,
-	output [17:0] out
-)
+	output reg[17:0] out
+);
 
   wire [17:0] adder_out, and_out, nand_out, nor_out;
 
@@ -89,7 +89,7 @@ module ALU(
 endmodule
 
 
-module 18BitComparator(
+module EighteenBitComparator(
 	input [17:0] a,
 	input [17:0] b,
 	output reg [2:0] out
@@ -141,31 +141,31 @@ module RegFile(
 	output reg [17:0] r1_out,
 	output reg [17:0] r2_out
 );
-	reg [17:0] reg [0:15];
+	reg [17:0] regx [0:15];
 	always @* begin
 		if (reset == 1) begin
-			reg[0] = 18'h0000;
-			reg[1] = 18'h0000;
-			reg[2] = 18'h0000;
-			reg[3] = 18'h0000;
-			reg[4] = 18'h0000;
-			reg[5] = 18'h0000;
-			reg[6] = 18'h0000;
-			reg[7] = 18'h0000;
-			reg[8] = 18'h0000;
-			reg[9] = 18'h0000;
-			reg[10] = 18'h0000;
-			reg[11] = 18'h0000;
-			reg[12] = 18'h0000;
-			reg[13] = 18'h0000;
-			reg[14] = 18'h0000;
-			reg[15] = 18'h0000;
+			regx[0] = 18'h0000;
+			regx[1] = 18'h0000;
+			regx[2] = 18'h0000;
+			regx[3] = 18'h0000;
+			regx[4] = 18'h0000;
+			regx[5] = 18'h0000;
+			regx[6] = 18'h0000;
+			regx[7] = 18'h0000;
+			regx[8] = 18'h0000;
+			regx[9] = 18'h0000;
+			regx[10] = 18'h0000;
+			regx[11] = 18'h0000;
+			regx[12] = 18'h0000;
+			regx[13] = 18'h0000;
+			regx[14] = 18'h0000;
+			regx[15] = 18'h0000;
 		end
 		else if (w_enable == 1) begin
-			reg[w_addr] = w_data;
+			regx[w_addr] = w_data;
 		end
-		r1_out = reg[r1_addr];
-		r2_out = reg[r2_addr];
+		r1_out = regx[r1_addr];
+		r2_out = regx[r2_addr];
 	end
 
 endmodule
@@ -185,7 +185,8 @@ module Control_Unit(
 	output reg alu_imm,
 	output reg ld_signal,
 	output reg memwr_signal,
-	output reg[9:0] addres_out
+	output reg[9:0] addres_out,
+	output reg cmp_signal
 
 );
 
@@ -196,7 +197,9 @@ module Control_Unit(
 	wire [3:0] last_fb = instruction[3:0];
 	wire [9:0] addr = instruction[9:0];
 	wire [6:0] imm_data = instruction[6:0];
-
+	
+	initial
+		state = 5'd0;
 
 	always @* begin
 		if (state == 5'b00000 && start == 1) begin
@@ -347,9 +350,8 @@ module flagMem(
 	input reset,
 	output reg [1:0] data_out
 );
-	always @(posedge clk) begin
-		
-		reg[1:0] flags;
+	reg[1:0] flags;
+	always @* begin		
 		if (reset == 1) begin
 			flags <= 2'b00;
 		end
@@ -362,9 +364,100 @@ module flagMem(
 endmodule
 
 
-module proccessor(
-	input start,
-)
-	
+module Processor(
+  input start,
+  input clk,
+  input [17:0] instruction,
+  output reg [17:0] alu_out,
+  output reg [2:0] comparator_out,
+  output reg [9:0] pc_out,
+  output reg [17:0] r1_out,
+  output reg [17:0] r2_out,
+  output [1:0] flag_out,
+  output [9:0] addr_out,
+  output alu_imm_out,
+  output ld_signal_out,
+  output memwr_signal_out
+);
+
+  wire [1:0] flags;
+  reg [17:0] alu_result;
+  reg [2:0] cmp_result;
+  reg [17:0] pc_result;
+  reg [17:0] r1_result;
+  reg [17:0] r2_result;
+  reg [3:0] flag_result;
+  reg [9:0] addr_result;
+  reg alu_imm_result;
+  reg ld_signal_result;
+  reg memwr_signal_result;
+
+  // Instantiate modules
+  ALU alu_inst(
+    .a(r1_result),
+    .b(r2_result),
+    .select(flag_result),
+    .out(alu_result)
+  );
+
+  EighteenBitComparator cmp_inst(
+    .a(r1_result),
+    .b(r2_result),
+    .out(cmp_result)
+  );
+
+  PC pc_inst(
+    .addr(pc_result),
+    .inc(1'b1),
+    .reset(1'b0),
+    .w_enable(pc_wrt),
+    .out(pc_result)
+  );
+
+  RegFile regfile_inst(
+    .w_addr(w_addr),
+    .w_data(alu_out),
+    .w_enable(regw_enable),
+    .reset(reset),
+    .r1_addr(r1_addr),
+    .r2_addr(r2_addr),
+    .r1_out(r1_result),
+    .r2_out(r2_result)
+  );
+
+  Control_Unit control_inst(
+    .start(start),
+    .instruction(instruction),
+    .flagbits(flags),
+    .alu_select(alu_select),
+    .pc_inc(pc_inc),
+    .pc_wrt(pc_wrt),
+    .r1_addr(r1_addr),
+    .r2_addr(r2_addr),
+    .w_addr(w_addr),
+    .regw_enable(regw_enable),
+    .reset(reset),
+    .alu_imm(alu_imm_result),
+    .ld_signal(ld_signal_result),
+    .memwr_signal(memwr_signal_result),
+    .addres_out(addr_result)
+  );
+
+  flagMem flagmem_inst(
+    .data_in(cmp_result),
+    .w_enable(1'b1),
+    .reset(1'b0),
+    .data_out(flags)
+  );
+
+  // Connect outputs
+  assign flag_out = flags;
+  assign addr_out = addr_result;
+  assign alu_imm_out = alu_imm_result;
+  assign ld_signal_out = ld_signal_result;
+  assign memwr_signal_out = memwr_signal_result;
 
 endmodule
+
+
+
