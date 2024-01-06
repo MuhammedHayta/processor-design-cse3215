@@ -174,20 +174,15 @@ endmodule
 module Control_Unit(
 	input start,
 	input [17:0] instruction,
-	input [1:0] flagbits,
 	output reg [3:0] alu_select,
 	output reg pc_inc, pc_wrt,
 	output reg [3:0] r1_addr,
 	output reg [3:0] r2_addr,
 	output reg [3:0] w_addr,
 	output reg regw_enable,
-	output reg reset,
-	output reg alu_imm,
-	output reg ld_signal,
-	output reg memwr_signal,
-	output reg[9:0] addres_out
-
+	output reg reset
 );
+
 
 	reg[4:0] state;
 	wire [3:0] opcode = instruction[17:14];
@@ -206,7 +201,7 @@ module Control_Unit(
 		else if(state == 5'b00001 && start == 0) begin
 			case (opcode)
 				4'b0000: begin // ADD
-					alu_select = 4'b0001;
+					alu_select = 4'b0000;
 					r1_addr = second_fb;
 					r2_addr = last_fb;
 					w_addr = first_fb;
@@ -214,7 +209,7 @@ module Control_Unit(
 					pc_inc = 1;
 				end
 				4'b0001: begin // AND
-					alu_select = 4'b0010;
+					alu_select = 4'b0001;
 					r1_addr = second_fb;
 					r2_addr = last_fb;
 					w_addr = first_fb;
@@ -222,7 +217,7 @@ module Control_Unit(
 					pc_inc = 1;
 				end
 				4'b0010: begin // NAND
-					alu_select = 4'b0100;
+					alu_select = 4'b0010;
 					r1_addr = second_fb;
 					r2_addr = last_fb;
 					w_addr = first_fb;
@@ -230,7 +225,7 @@ module Control_Unit(
 					pc_inc = 1;
 				end
 				4'b0011: begin // NOR
-					alu_select = 4'b1000;
+					alu_select = 4'b0010;
 					r1_addr = second_fb;
 					r2_addr = last_fb;
 					w_addr = first_fb;
@@ -238,133 +233,46 @@ module Control_Unit(
 					pc_inc = 1;
 				end
 				4'b0100: begin // ADDI
-					alu_select = 4'b0001;
+					alu_select = 4'00000;
 					r1_addr = second_fb;
-					alu_imm = 1;
+					//TODO: WE LEFT HERE!!!
+					r2_addr = last_fb;
 					w_addr = first_fb;
 					regw_enable = 1;
 					pc_inc = 1;
 				end
 				4'b0101: begin // ANDI
-					alu_select = 4'b0010;
-					r1_addr = second_fb;
-					alu_imm = 1;
-					w_addr = first_fb;
-					regw_enable = 1;
-					pc_inc = 1;
+					alu_select = 4'b
 				end
 				4'b0110: begin // LD
-					ld_signal = 1;
-					w_addr = first_fb;
-					regw_enable = 1;
-					addres_out = addr;
-					pc_inc = 1;
+					alu_select = 4'b
 				end
 				4'b0111: begin // ST
-					memwr_signal = 0;
-					r1_addr = first_fb;
-					addres_out = addr;
-					pc_inc = 1;
+					alu_select = 4'b
 				end
 				4'b1000: begin // CMP
-					cmp_signal = 1;
-					r1_addr = first_fb;
-					r2_addr = last_fb;
-					pc_inc = 1;
+					alu_select = 4'b
 				end
 				4'b1001: begin // JUMP
-					pc_inc = 0;
-					pc_wrt = 1;
-					alu_select = 4'b0001;
-					alu_imm = 1;
-					
+					alu_select = 4'b
 				end
 				4'b1010: begin // JE
-					if (flagbits == 2'b01) begin
-						pc_inc = 0;
-						pc_wrt = 1;
-						alu_select = 4'b0001;
-						alu_imm = 1;
-					end
-					else begin
-						pc_inc = 1;
-					end
+					alu_select = 4'b
 				end
 				4'b1011: begin // JA
-					if (flagbits == 2'b00) begin
-						pc_inc = 0;
-						pc_wrt = 1;
-						alu_select = 4'b0001;
-						alu_imm = 1;
-					end
-					else begin
-						pc_inc = 1;
-					end
+					alu_select = 4'b
 				end
 				4'b1100: begin // JB
-					if (flagbits == 2'b10) begin
-						pc_inc = 0;
-						pc_wrt = 1;
-						alu_select = 4'b0001;
-						alu_imm = 1;
-					end
-					else begin
-						pc_inc = 1;
-					end
+					alu_select = 4'b
 				end
 				4'b1101: begin // JAE
-					if (flagbits == 2'b00 || flagbits == 2'b01) begin
-						pc_inc = 0;
-						pc_wrt = 1;
-						alu_select = 4'b0001;
-						alu_imm = 1;
-					end
-					else begin
-						pc_inc = 1;
-					end
+					alu_select = 4'b
 				end
 				4'b1110: begin // JBE
-					if (flagbits == 2'b01 || flagbits == 2'b10) begin
-						pc_inc = 0;
-						pc_wrt = 1;
-						alu_select = 4'b0001;
-						alu_imm = 1;
-					end
-					else begin
-						pc_inc = 1;
-					end			
+					alu_select = 4'b
 				end
 		endcase
 		end
 	end
-
-endmodule
-
-
-module flagMem(
-	input [1:0] data_in,
-	input w_enable,
-	input reset,
-	output reg [1:0] data_out
-);
-	always @(posedge clk) begin
-		
-		reg[1:0] flags;
-		if (reset == 1) begin
-			flags <= 2'b00;
-		end
-		else if (w_enable == 1) begin
-			flags <= data_in;
-		end
-		data_out <= flags;
-
-	end
-endmodule
-
-
-module proccessor(
-	input start,
-)
-	
 
 endmodule
