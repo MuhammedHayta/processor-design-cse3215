@@ -262,7 +262,7 @@ module Control_Unit(
 		end
 		else if (state >= 5'b00001) begin
 			case (state)
-				4'b0000: begin // ADD
+				5'b00010: begin // ADD
 					alu_select = 4'b0001;
 					r1_addr = second_fb;
 					r2_addr = last_fb;
@@ -270,7 +270,7 @@ module Control_Unit(
 					regw_enable = 1;
 					pc_inc = 1;
 				end
-				4'b0001: begin // AND
+				5'b00011: begin // AND
 					alu_select = 4'b0010;
 					r1_addr = second_fb;
 					r2_addr = last_fb;
@@ -278,7 +278,7 @@ module Control_Unit(
 					regw_enable = 1;
 					pc_inc = 1;
 				end
-				4'b0010: begin // NAND
+				5'b00100: begin // NAND
 					alu_select = 4'b0100;
 					r1_addr = second_fb;
 					r2_addr = last_fb;
@@ -286,7 +286,7 @@ module Control_Unit(
 					regw_enable = 1;
 					pc_inc = 1;
 				end
-				4'b0011: begin // NOR
+				5'b00101: begin // NOR
 					alu_select = 4'b1000;
 					r1_addr = second_fb;
 					r2_addr = last_fb;
@@ -294,7 +294,7 @@ module Control_Unit(
 					regw_enable = 1;
 					pc_inc = 1;
 				end
-				4'b0100: begin // ADDI
+				5'b00110: begin // ADDI
 					alu_select = 4'b0001;
 					r1_addr = second_fb;
 					alu_imm = 1;
@@ -302,7 +302,7 @@ module Control_Unit(
 					regw_enable = 1;
 					pc_inc = 1;
 				end
-				4'b0101: begin // ANDI
+				5'b00111: begin // ANDI
 					alu_select = 4'b0010;
 					r1_addr = second_fb;
 					alu_imm = 1;
@@ -310,33 +310,33 @@ module Control_Unit(
 					regw_enable = 1;
 					pc_inc = 1;
 				end
-				4'b0110: begin // LD
+				5'b01000: begin // LD
 					ld_signal = 1;
 					w_addr = first_fb;
 					regw_enable = 1;
 					addres_out = addr;
 					pc_inc = 1;
 				end
-				4'b0111: begin // ST
+				5'b01001: begin // ST
 					memwr_signal = 0;
 					r1_addr = first_fb;
 					addres_out = addr;
 					pc_inc = 1;
 				end
-				4'b1000: begin // CMP
+				5'b01010: begin // CMP
 					cmp_signal = 1;
 					r1_addr = first_fb;
 					r2_addr = last_fb;
 					pc_inc = 1;
 				end
-				4'b1001: begin // JUMP
+				5'b01011: begin // JUMP
 					pc_inc = 0;
 					pc_wrt = 1;
 					alu_select = 4'b0001;
 					alu_imm = 1;
 					
 				end
-				4'b1010: begin // JE
+				5'b01100: begin // JE
 					if (flagbits == 2'b01) begin
 						pc_inc = 0;
 						pc_wrt = 1;
@@ -347,7 +347,7 @@ module Control_Unit(
 						pc_inc = 1;
 					end
 				end
-				4'b1011: begin // JA
+				5'b01101: begin // JA
 					if (flagbits == 2'b00) begin
 						pc_inc = 0;
 						pc_wrt = 1;
@@ -358,7 +358,7 @@ module Control_Unit(
 						pc_inc = 1;
 					end
 				end
-				4'b1100: begin // JB
+				5'b01110: begin // JB
 					if (flagbits == 2'b10) begin
 						pc_inc = 0;
 						pc_wrt = 1;
@@ -369,7 +369,7 @@ module Control_Unit(
 						pc_inc = 1;
 					end
 				end
-				4'b1101: begin // JAE
+				5'b01111: begin // JAE
 					if (flagbits == 2'b00 || flagbits == 2'b01) begin
 						pc_inc = 0;
 						pc_wrt = 1;
@@ -380,7 +380,7 @@ module Control_Unit(
 						pc_inc = 1;
 					end
 				end
-				4'b1110: begin // JBE
+				5'b10000: begin // JBE
 					if (flagbits == 2'b01 || flagbits == 2'b10) begin
 						pc_inc = 0;
 						pc_wrt = 1;
