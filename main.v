@@ -171,6 +171,38 @@ module RegFile(
 endmodule
 
 
+module ROM(
+	input [9:0] addr,
+	output reg [17:0] out
+);
+	reg [17:0] mem [0:1023];
+	initial begin
+		$readmemh("instructions.txt", mem);
+	end
+	always @* begin
+		out = mem[addr];
+	end
+endmodule
+
+module RAM(
+	input [9:0] addr,
+	input [17:0] w_data,
+	input w_enable,
+	output reg [17:0] r_data
+);
+	reg [17:0] mem [0:1023];
+	initial begin
+		$readmemh("data.txt", mem);
+	end
+	always @* begin
+		if (w_enable == 1) begin
+			mem[addr] = w_data;
+		end
+		r_data = mem[addr];
+	end
+endmodule
+
+
 module Control_Unit(
 	input start,
 	input [17:0] instruction,

@@ -1,4 +1,28 @@
-E:/CSE3215/Operating_Systems_Projects/Verliog/main.v {1 {vlog -work work -stats=none E:/CSE3215/Operating_Systems_Projects/Verliog/main.v
+E:/Marmara2023-2024/Digital_Logic_Design/Processor_Project/processor-design-cse3215/Verliog/deneme.v {0 {vcom -work work -2002 -explicit -stats=none E:/Marmara2023-2024/Digital_Logic_Design/Processor_Project/processor-design-cse3215/Verliog/deneme.v
+Model Technology ModelSim - Intel FPGA Edition vcom 10.5b Compiler 2016.10 Oct  5 2016
+-- Loading package STANDARD
+** Error (suppressible): E:/Marmara2023-2024/Digital_Logic_Design/Processor_Project/processor-design-cse3215/Verliog/deneme.v(2): (vcom-1491) Empty source files.
+
+} {} {}} E:/Marmara2023-2024/Digital_Logic_Design/Processor_Project/processor-design-cse3215/Verliog/main.v {1 {vlog -work work -stats=none E:/Marmara2023-2024/Digital_Logic_Design/Processor_Project/processor-design-cse3215/Verliog/main.v
+Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
+-- Compiling module EighteenBitAdder
+-- Compiling module EighteenBitAnd
+-- Compiling module EighteenBitNAnd
+-- Compiling module EighteenBitNOr
+-- Compiling module ALU
+-- Compiling module EighteenBitComparator
+-- Compiling module PC
+-- Compiling module RegFile
+-- Compiling module Control_Unit
+-- Compiling module ROM
+-- Compiling module RAM
+-- Compiling module flagMem
+-- Compiling module CPU
+
+Top level modules:
+	CPU
+
+} {} {}} E:/CSE3215/Operating_Systems_Projects/Verliog/main.v {1 {vlog -work work -stats=none E:/CSE3215/Operating_Systems_Projects/Verliog/main.v
 Model Technology ModelSim - Intel FPGA Edition vlog 10.5b Compiler 2016.10 Oct  5 2016
 
 } {} {}}
